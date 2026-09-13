@@ -24,29 +24,29 @@
 static const char
 rcsid[] = "$Id: i_unix.c,v 1.5 1997/02/03 22:45:10 b1 Exp $";
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdarg.h>
 
-#include <math.h>
+// #include <math.h>
 
-#include <sys/time.h>
-#include <sys/types.h>
+// #include <sys/time.h>
+// #include <sys/types.h>
 
-#ifndef LINUX
-#include <sys/filio.h>
-#endif
+// #ifndef LINUX
+// #include <sys/filio.h>
+// #endif
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
+// #include <fcntl.h>
+// #include <unistd.h>
+// #include <sys/ioctl.h>
 
-// Linux voxware output.
-// #include <linux/soundcard.h>
+// // Linux voxware output.
+// // #include <linux/soundcard.h>
 
-// Timer stuff. Experimental.
-#include <time.h>
-#include <signal.h>
+// // Timer stuff. Experimental.
+// #include <time.h>
+// #include <signal.h>
 
 #include "z_zone.h"
 
@@ -149,7 +149,6 @@ int		vol_lookup[128*256];
 // Hardware left and right channel volume lookup.
 int*		channelleftvol_lookup[NUM_CHANNELS];
 int*		channelrightvol_lookup[NUM_CHANNELS];
-
 
 
 
@@ -949,11 +948,13 @@ int I_QrySongPlaying(int handle)
 // I ripped this out of the Timer class in
 //  our Difference Engine, including a few
 //  SUN remains...
-//  
+//
+#if 0
 #ifdef sun
     typedef     sigset_t        tSigSet;
 #else    
     typedef     int             tSigSet;
+#endif
 #endif
 
 
@@ -961,9 +962,11 @@ int I_QrySongPlaying(int handle)
 //  time independend timer happens to get lost due to heavy load.
 // SIGALRM and ITIMER_REAL doesn't really work well.
 // There are issues with profiling as well.
+#if 0
 static int /*__itimer_which*/  itimer = ITIMER_REAL;
 
 static int sig = SIGALRM;
+#endif
 
 // Interrupt handler.
 void I_HandleSoundTimer( int ignore )

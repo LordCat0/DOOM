@@ -23,17 +23,17 @@
 static const char
 rcsid[] = "$Id: m_bbox.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <stdio.h>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/ioctl.h>
+// #include <sys/socket.h>
+// #include <netinet/in.h>
+// #include <arpa/inet.h>
+// #include <errno.h>
+// #include <unistd.h>
+// #include <netdb.h>
+// #include <sys/ioctl.h>
 
 #include "i_system.h"
 #include "d_event.h"
@@ -42,14 +42,7 @@ rcsid[] = "$Id: m_bbox.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 
 #include "doomstat.h"
 
-#ifdef __GNUG__
-#pragma implementation "i_net.h"
-#endif
 #include "i_net.h"
-
-
-
-
 
 // For some odd reason...
 #define ntohl(x) \
@@ -73,12 +66,16 @@ boolean NetListen (void);
 // NETWORKING
 //
 
+#if 0
 int	DOOMPORT =	(IPPORT_USERRESERVED +0x1d );
 
 int			sendsocket;
 int			insocket;
 
 struct	sockaddr_in	sendaddress[MAXNETNODES];
+#endif
+
+static doomcom_t localdoomcom;
 
 void	(*netget) (void);
 void	(*netsend) (void);
@@ -89,6 +86,7 @@ void	(*netsend) (void);
 //
 int UDPsocket (void)
 {
+#if 0
     int	s;
 	
     // allocate a socket
@@ -97,6 +95,8 @@ int UDPsocket (void)
 	I_Error ("can't create socket: %s",strerror(errno));
 		
     return s;
+#endif
+    return -1;
 }
 
 //
@@ -107,6 +107,7 @@ BindToLocalPort
 ( int	s,
   int	port )
 {
+#if 0
     int			v;
     struct sockaddr_in	address;
 	
@@ -118,6 +119,7 @@ BindToLocalPort
     v = bind (s, (void *)&address, sizeof(address));
     if (v == -1)
 	I_Error ("BindToPort: bind: %s", strerror(errno));
+#endif
 }
 
 
@@ -126,6 +128,7 @@ BindToLocalPort
 //
 void PacketSend (void)
 {
+#if 0
     int		c;
     doomdata_t	sw;
 				
@@ -152,6 +155,7 @@ void PacketSend (void)
 	
     //	if (c == -1)
     //		I_Error ("SendPacket error: %s",strerror(errno));
+#endif
 }
 
 
@@ -160,6 +164,7 @@ void PacketSend (void)
 //
 void PacketGet (void)
 {
+#if 0
     int			i;
     int			c;
     struct sockaddr_in	fromaddress;
@@ -215,12 +220,14 @@ void PacketGet (void)
 	netbuffer->cmds[c].chatchar = sw.cmds[c].chatchar;
 	netbuffer->cmds[c].buttons = sw.cmds[c].buttons;
     }
+#endif
 }
 
 
 
 int GetLocalAddress (void)
 {
+#if 0
     char		hostname[1024];
     struct hostent*	hostentry;	// host information entry
     int			v;
@@ -235,6 +242,8 @@ int GetLocalAddress (void)
 	I_Error ("GetLocalAddress : gethostbyname: couldn't get local host");
 		
     return *(int *)hostentry->h_addr_list[0];
+#endif
+    return 0;
 }
 
 
@@ -243,6 +252,7 @@ int GetLocalAddress (void)
 //
 void I_InitNetwork (void)
 {
+#if 0
     boolean		trueval = true;
     int			i;
     int			p;
@@ -329,11 +339,22 @@ void I_InitNetwork (void)
     ioctl (insocket, FIONBIO, &trueval);
 
     sendsocket = UDPsocket ();
+#endif
+
+    memset (&localdoomcom, 0, sizeof(localdoomcom));
+    doomcom = &localdoomcom;
+    doomcom->id = DOOMCOM_ID;
+    doomcom->numnodes = 1;
+    doomcom->ticdup = 1;
+    doomcom->consoleplayer = 0;
+    doomcom->numplayers = 1;
+    netgame = false;
 }
 
 
 void I_NetCmd (void)
 {
+#if 0
     if (doomcom->command == CMD_SEND)
     {
 	netsend ();
@@ -344,5 +365,5 @@ void I_NetCmd (void)
     }
     else
 	I_Error ("Bad net cmd: %i\n",doomcom->command);
+#endif
 }
-
