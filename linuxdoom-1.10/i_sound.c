@@ -42,7 +42,7 @@ rcsid[] = "$Id: i_unix.c,v 1.5 1997/02/03 22:45:10 b1 Exp $";
 #include <sys/ioctl.h>
 
 // Linux voxware output.
-#include <linux/soundcard.h>
+// #include <linux/soundcard.h>
 
 // Timer stuff. Experimental.
 #include <time.h>
@@ -162,6 +162,7 @@ myioctl
   int	command,
   int*	arg )
 {   
+#if 0
     int		rc;
     extern int	errno;
     
@@ -172,6 +173,7 @@ myioctl
 	fprintf(stderr, "errno=%d\n", errno);
 	exit(-1);
     }
+#endif
 }
 
 
@@ -187,6 +189,7 @@ getsfx
 ( char*         sfxname,
   int*          len )
 {
+#if 0
     unsigned char*      sfx;
     unsigned char*      paddedsfx;
     int                 i;
@@ -248,6 +251,9 @@ getsfx
 
     // Return allocated padded data.
     return (void *) (paddedsfx + 8);
+#endif
+    *len = 0;
+    return 0;
 }
 
 
@@ -268,6 +274,7 @@ addsfx
   int		step,
   int		seperation )
 {
+#if 0
     static unsigned short	handlenums = 0;
  
     int		i;
@@ -378,6 +385,8 @@ addsfx
 
     // You tell me.
     return rc;
+#endif
+    return 0;
 }
 
 
@@ -395,6 +404,7 @@ addsfx
 //
 void I_SetChannels()
 {
+#if 0
   // Init internal lookups (raw data, mixing buffer, channels).
   // This function sets up internal lookups used during
   //  the mixing process. 
@@ -421,26 +431,31 @@ void I_SetChannels()
   for (i=0 ; i<128 ; i++)
     for (j=0 ; j<256 ; j++)
       vol_lookup[i*256+j] = (i*(j-128)*256)/127;
-}	
+#endif
+}
 
  
 void I_SetSfxVolume(int volume)
 {
+#if 0
   // Identical to DOS.
   // Basically, this should propagate
   //  the menu/config file setting
   //  to the state variable used in
   //  the mixing.
   snd_SfxVolume = volume;
+#endif
 }
 
 // MUSIC API - dummy. Some code from DOS version.
 void I_SetMusicVolume(int volume)
 {
+#if 0
   // Internal state variable.
   snd_MusicVolume = volume;
   // Now set volume on output device.
   // Whatever( snd_MusciVolume );
+#endif
 }
 
 
@@ -450,9 +465,12 @@ void I_SetMusicVolume(int volume)
 //
 int I_GetSfxLumpNum(sfxinfo_t* sfx)
 {
+#if 0
     char namebuf[9];
     sprintf(namebuf, "ds%s", sfx->name);
     return W_GetNumForName(namebuf);
+#endif
+    return 0;
 }
 
 //
@@ -475,6 +493,7 @@ I_StartSound
   int		pitch,
   int		priority )
 {
+#if 0
 
   // UNUSED
   priority = 0;
@@ -498,12 +517,15 @@ I_StartSound
     
     return id;
 #endif
+#endif
+  return 0;
 }
 
 
 
 void I_StopSound (int handle)
 {
+#if 0
   // You need the handle returned by StartSound.
   // Would be looping all channels,
   //  tracking down the handle,
@@ -511,13 +533,17 @@ void I_StopSound (int handle)
   
   // UNUSED.
   handle = 0;
+#endif
 }
 
 
 int I_SoundIsPlaying(int handle)
 {
+#if 0
     // Ouch.
     return gametic < handle;
+#endif
+    return 0;
 }
 
 
@@ -538,6 +564,7 @@ int I_SoundIsPlaying(int handle)
 //
 void I_UpdateSound( void )
 {
+#if 0
 #ifdef SNDINTR
   // Debug. Count buffer misses with interrupt.
   static int misses = 0;
@@ -651,6 +678,7 @@ void I_UpdateSound( void )
     // Increment flag for update.
     flag++;
 #endif
+#endif
 }
 
 
@@ -665,8 +693,10 @@ void I_UpdateSound( void )
 void
 I_SubmitSound(void)
 {
+#if 0
   // Write it to DSP device.
   write(audio_fd, mixbuffer, SAMPLECOUNT*BUFMUL);
+#endif
 }
 
 
@@ -678,6 +708,7 @@ I_UpdateSoundParams
   int	sep,
   int	pitch)
 {
+#if 0
   // I fail too see that this is used.
   // Would be using the handle to identify
   //  on which channel the sound might be active,
@@ -685,6 +716,7 @@ I_UpdateSoundParams
 
   // UNUSED.
   handle = vol = sep = pitch = 0;
+#endif
 }
 
 
@@ -692,6 +724,7 @@ I_UpdateSoundParams
 
 void I_ShutdownSound(void)
 {    
+#if 0
 #ifdef SNDSERV
   if (sndserver)
   {
@@ -727,6 +760,7 @@ void I_ShutdownSound(void)
 
   // Done.
   return;
+#endif
 }
 
 
@@ -737,6 +771,7 @@ void I_ShutdownSound(void)
 void
 I_InitSound()
 { 
+#if 0
 #ifdef SNDSERV
   char buffer[256];
   
@@ -822,6 +857,7 @@ I_InitSound()
   fprintf(stderr, "I_InitSound: sound module ready\n");
     
 #endif
+#endif
 }
 
 
@@ -840,52 +876,68 @@ static int	musicdies=-1;
 
 void I_PlaySong(int handle, int looping)
 {
+#if 0
   // UNUSED.
   handle = looping = 0;
   musicdies = gametic + TICRATE*30;
+#endif
 }
 
 void I_PauseSong (int handle)
 {
+#if 0
   // UNUSED.
   handle = 0;
+#endif
 }
 
 void I_ResumeSong (int handle)
 {
+#if 0
   // UNUSED.
   handle = 0;
+#endif
 }
 
 void I_StopSong(int handle)
 {
+#if 0
   // UNUSED.
   handle = 0;
   
   looping = 0;
   musicdies = 0;
+#endif
 }
 
 void I_UnRegisterSong(int handle)
 {
+#if 0
   // UNUSED.
   handle = 0;
+#endif
 }
 
 int I_RegisterSong(void* data)
 {
+#if 0
   // UNUSED.
   data = NULL;
   
   return 1;
+#endif
+  return 0;
 }
 
 // Is the song playing?
 int I_QrySongPlaying(int handle)
 {
+#if 0
   // UNUSED.
   handle = 0;
   return looping || musicdies > gametic;
+#endif
+  return 0;
 }
 
 
@@ -916,6 +968,7 @@ static int sig = SIGALRM;
 // Interrupt handler.
 void I_HandleSoundTimer( int ignore )
 {
+#if 0
   // Debug.
   //fprintf( stderr, "%c", '+' ); fflush( stderr );
   
@@ -935,11 +988,13 @@ void I_HandleSoundTimer( int ignore )
   // UNUSED, but required.
   ignore = 0;
   return;
+#endif
 }
 
 // Get the interrupt. Set duration in millisecs.
 int I_SoundSetTimer( int duration_of_tick )
 {
+#if 0
   // Needed for gametick clockwork.
   struct itimerval    value;
   struct itimerval    ovalue;
@@ -973,13 +1028,17 @@ int I_SoundSetTimer( int duration_of_tick )
     fprintf( stderr, "I_SoundSetTimer: interrupt n.a.\n");
   
   return res;
+#endif
+  return 0;
 }
 
 
 // Remove the interrupt. Set duration to zero.
 void I_SoundDelTimer()
 {
+#if 0
   // Debug.
   if ( I_SoundSetTimer( 0 ) == -1)
     fprintf( stderr, "I_SoundDelTimer: failed to remove interrupt. Doh!\n");
+#endif
 }
