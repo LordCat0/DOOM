@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+build=$(mktemp -d)
+trap 'rm -rf "$build"' EXIT
+
+case ${1-} in
+    "") extension=bc ;;
+    -r) extension=ll ;;
+    *) echo "usage: $0 [-r]" >&2; exit 2 ;;
+esac
+
+for source in "$root"/linuxdoom-1.10/*.c; do
+    clang -w -DNORMALUNIX -DLINUX -emit-llvm -c "$source" \
+        -o "$build/$(basename "${source%.c}").bc"
+done
+
+if [ "$extension" = ll ]; then
+    llvm-link -S "$build"/*.bc -o "$root/doom.ll"
+else
+    llvm-link "$build"/*.bc -o "$root/doom.bc"
+fi
