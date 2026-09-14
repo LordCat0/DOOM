@@ -95,7 +95,7 @@ typedef enum
 // For resize of screen, at start of game.
 // It will not work dynamically, see visplanes.
 //
-#define	BASE_WIDTH		320
+#define	BASE_WIDTH		480
 
 // It is educational but futile to change this
 //  scaling e.g. to 2. Drawing of status bar,
@@ -107,9 +107,9 @@ typedef enum
 // Defines suck. C sucks.
 // C++ might sucks for OOP, but it sure is a better C.
 // So there.
-#define SCREENWIDTH  320
+#define SCREENWIDTH  480
 //SCREEN_MUL*BASE_WIDTH //320
-#define SCREENHEIGHT 200
+#define SCREENHEIGHT 180
 //(int)(SCREEN_MUL*BASE_WIDTH*INV_ASPECT_RATIO) //200
 
 
