@@ -41,7 +41,10 @@ rcsid[] = "$Id: r_data.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 #include "doomstat.h"
 #include "r_sky.h"
 
-#include  <alloca.h>
+#include <stdlib.h>
+
+// llvm2scratch has no dynamic stack allocations; these startup buffers may live on the heap.
+#define alloca malloc
 
 
 #include "r_data.h"
@@ -841,6 +844,5 @@ void R_PrecacheLevel (void)
 	}
     }
 }
-
 
 

@@ -45,7 +45,8 @@ FixedMul
 ( fixed_t	a,
   fixed_t	b )
 {
-    return ((long long) a * (long long) b) >> FRACBITS;
+    // Scratch uses doubles; add multiword multiplication only if full-range fixed-point precision is needed.
+    return (fixed_t) ((double) a * (double) b / FRACUNIT);
 }
 
 

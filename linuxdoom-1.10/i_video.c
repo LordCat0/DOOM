@@ -26,11 +26,11 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 
 #if __has_include(<X11/Xlib.h>)
 #define HAVE_X11
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -41,16 +41,15 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #ifdef LINUX
 int XShmGetEventBase( Display* dpy ); // problems with g++?
 #endif
-#endif
 
 #include <stdarg.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
 #include <netinet/in.h>
 #include <errno.h>
 #include <signal.h>
+#endif
 
 #include "doomstat.h"
 #include "i_system.h"

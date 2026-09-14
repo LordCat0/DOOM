@@ -3,6 +3,8 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 build=$(mktemp -d)
+llvm_bin=${LLVM19_BIN:-$(brew --prefix llvm@19)/bin}
+newlib=${NEWLIB_SCRATCH:-"$(dirname "$root")/newlib-scratch"}
 trap 'rm -rf "$build"' EXIT
 
 case ${1-} in
@@ -12,12 +14,23 @@ case ${1-} in
 esac
 
 for source in "$root"/linuxdoom-1.10/*.c; do
-    clang -w -DNORMALUNIX -DLINUX -emit-llvm -c "$source" \
+    "$llvm_bin/clang" -w -O1 -fno-builtin -fno-vectorize -fno-slp-vectorize \
+        -target arm-none-eabi -m32 -ffreestanding -fno-stack-protector -nostdlib \
+        -DNORMALUNIX -DLINUX -I "$newlib/build/newlib/scratch/include" \
+        -emit-llvm -c "$source" \
         -o "$build/$(basename "${source%.c}").bc"
 done
 
+objects="$build/doom-objects.bc"
+linked="$build/doom.bc"
+"$llvm_bin/llvm-link" "$build"/*.bc -o "$objects"
+"$llvm_bin/llvm-link" "$objects" "$newlib"/build/newlib/scratch/lib/*.a \
+    --only-needed -o "$linked"
+
 if [ "$extension" = ll ]; then
-    llvm-link -S "$build"/*.bc -o "$root/doom.ll"
+    "$llvm_bin/opt" -passes='globalopt,internalize,globaldce' -internalize-public-api-list=main \
+        -S "$linked" -o "$root/doom.ll"
 else
-    llvm-link "$build"/*.bc -o "$root/doom.bc"
+    "$llvm_bin/opt" -passes='globalopt,internalize,globaldce' -internalize-public-api-list=main \
+        "$linked" -o "$root/doom.bc"
 fi

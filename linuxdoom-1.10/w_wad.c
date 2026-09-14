@@ -34,7 +34,9 @@ rcsid[] = "$Id: w_wad.c,v 1.5 1997/02/03 16:47:57 b1 Exp $";
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <alloca.h>
+
+// llvm2scratch has no dynamic stack allocations; these WAD buffers may live on the heap.
+#define alloca malloc
 #ifndef O_BINARY
 #define O_BINARY		0
 #endif
@@ -67,9 +69,11 @@ void**			lumpcache;
 
 #define strcmpi	strcasecmp
 
-void strupr (char* s)
+char* strupr (char* s)
 {
+    char* start = s;
     while (*s) { *s = toupper(*s); s++; }
+    return start;
 }
 
 int filelength (int handle) 
@@ -574,4 +578,3 @@ void W_Profile (void)
     }
     fclose (f);
 }
-
