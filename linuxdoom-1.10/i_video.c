@@ -29,15 +29,18 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#if __has_include(<X11/Xlib.h>)
+#define HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
-
 #include <X11/extensions/XShm.h>
+
 // Had to dig up XShm.c for this one.
 // It is in the libXext, but not in the XFree86 headers.
 #ifdef LINUX
 int XShmGetEventBase( Display* dpy ); // problems with g++?
+#endif
 #endif
 
 #include <stdarg.h>
@@ -46,7 +49,7 @@ int XShmGetEventBase( Display* dpy ); // problems with g++?
 #include <sys/socket.h>
 
 #include <netinet/in.h>
-#include <errnos.h>
+#include <errno.h>
 #include <signal.h>
 
 #include "doomstat.h"
@@ -56,6 +59,8 @@ int XShmGetEventBase( Display* dpy ); // problems with g++?
 #include "d_main.h"
 
 #include "doomdef.h"
+
+#ifdef HAVE_X11
 
 #define POINTER_WARP_COUNTDOWN	1
 
@@ -767,7 +772,7 @@ void I_InitGraphics(void)
     }
 
     // use the default visual 
-    X_screen = DefaultScreen(X_display);
+    X_screen = XDefaultScreen(X_display);
     if (!XMatchVisualInfo(X_display, X_screen, 8, PseudoColor, &X_visualinfo))
 	I_Error("xdoom currently only supports 256-color PseudoColor screens");
     X_visual = X_visualinfo.visual;
@@ -791,7 +796,7 @@ void I_InitGraphics(void)
     fprintf(stderr, "Using MITSHM extension\n");
 
     // create the colormap
-    X_cmap = XCreateColormap(X_display, RootWindow(X_display,
+    X_cmap = XCreateColormap(X_display, XRootWindow(X_display,
 						   X_screen), X_visual, AllocAll);
 
     // setup attributes for main window
@@ -807,7 +812,7 @@ void I_InitGraphics(void)
 
     // create the main window
     X_mainWindow = XCreateWindow(	X_display,
-					RootWindow(X_display, X_screen),
+					XRootWindow(X_display, X_screen),
 					x, y,
 					X_width, X_height,
 					0, // borderwidth
@@ -1047,4 +1052,19 @@ Expand4
     } while (y--);
 }
 
+#else
 
+void I_ShutdownGraphics(void) {}
+void I_StartFrame(void) {}
+void I_StartTic(void) {}
+void I_UpdateNoBlit(void) {}
+void I_FinishUpdate(void) {}
+void I_ReadScreen(byte* scr) {}
+void I_SetPalette(byte* palette) {}
+
+void I_InitGraphics(void)
+{
+    I_Error("X11 development files are required for graphics");
+}
+
+#endif
