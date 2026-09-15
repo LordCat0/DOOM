@@ -1053,17 +1053,89 @@ Expand4
 
 #else
 
+void SB3_render(void);
+void SB3_go_to_xy(double x, double y);
+void SB3_change_x(double amount);
+void SB3_change_y(double amount);
+void SB3_set_x(double x);
+void SB3_set_y(double y);
+void SB3_pen_clear(void);
+void SB3_pen_down(void);
+void SB3_pen_up(void);
+void SB3_pen_set_color(int color);
+void SB3_pen_set_size(double size);
+
+static int scratch_palette[256];
+
 void I_ShutdownGraphics(void) {}
 void I_StartFrame(void) {}
 void I_StartTic(void) {}
 void I_UpdateNoBlit(void) {}
-void I_FinishUpdate(void) {}
-void I_ReadScreen(byte* scr) {}
-void I_SetPalette(byte* palette) {}
+
+void I_FinishUpdate(void)
+{
+    byte *pixel = screens[0];
+    int x;
+    int y;
+
+    SB3_pen_clear();
+    SB3_pen_set_size(2);
+    SB3_go_to_xy(-240, 180);
+
+    for (y = 0; y < SCREENHEIGHT; y++)
+    {
+	SB3_pen_down();
+
+	for (x = 0; x < SCREENWIDTH;)
+	{
+	    int color = *pixel++;
+	    int end = x + 1;
+
+	    while (end < SCREENWIDTH && *pixel == color)
+	    {
+		pixel++;
+		end++;
+	    }
+
+	    SB3_pen_set_color(scratch_palette[color]);
+	    SB3_change_x((end - x) * 1.5);
+	    x = end;
+	}
+
+	if (y + 1 < SCREENHEIGHT)
+	{
+	    SB3_pen_up();
+	    SB3_set_x(-240);
+	    SB3_change_y(-360.0 / (SCREENHEIGHT - 1));
+	}
+    }
+
+    SB3_pen_up();
+    SB3_set_y(-180);
+    SB3_render();
+}
+
+void I_ReadScreen(byte* scr)
+{
+    memcpy(scr, screens[0], SCREENWIDTH * SCREENHEIGHT);
+}
+
+void I_SetPalette(byte* palette)
+{
+    int i;
+
+    for (i = 0; i < 256; i++)
+    {
+	int red = gammatable[usegamma][*palette++];
+	int green = gammatable[usegamma][*palette++];
+	int blue = gammatable[usegamma][*palette++];
+
+	scratch_palette[i] = (red << 16) | (green << 8) | blue;
+    }
+}
 
 void I_InitGraphics(void)
 {
-    I_Error("X11 development files are required for graphics");
 }
 
 #endif
