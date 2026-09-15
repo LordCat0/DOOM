@@ -1136,6 +1136,19 @@ void I_SetPalette(byte* palette)
 
 void I_InitGraphics(void)
 {
+    static boolean initialized;
+
+    if (initialized)
+    {
+	return;
+    }
+    initialized = true;
+
+    SB3_pen_clear();
+    SB3_pen_set_size(2);
+    SB3_pen_up();
+    SB3_go_to_xy(-240, 180);
+    SB3_render();
 }
 
 #endif
